@@ -369,12 +369,13 @@
         },
 
         onDisconnect: () => {
-  setStatus('Call ended', false);
-  setMic('idle', 'Call ended');
-  // Only fetch if a booking was confirmed during this call
-  if (bookingConfirmed) {
-    setTimeout(fetchAndShow, 1500);
-  } else {
+          console.log('DISCONNECTED. bookingConfirmed =', bookingConfirmed);
+          setStatus('Call ended', false);
+          setMic('idle', 'Call ended');
+          // Only fetch if a booking was confirmed during this call
+          if (bookingConfirmed) {
+          setTimeout(fetchAndShow, 1500);
+          } else {
     // Just go back to start button
     setTimeout(resetToStart, 1500);
   }
