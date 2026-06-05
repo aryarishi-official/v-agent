@@ -163,20 +163,17 @@
     // ── paste your n8n production webhook URL here ──
     const N8N_WEBHOOK = 'https://removed-humility-contusion.ngrok-free.devhttp:/webhook/latest-booking';
 
-    window.addEventListener('load', () => {
-      const widget = document.querySelector('elevenlabs-convai');
-      if (!widget) return;
-
-      widget.addEventListener('call-end', async () => {
-        try {
-          const res = await fetch(N8N_WEBHOOK, { method: 'POST' });
-          const data = await res.json();
-          if (data.success) showResult(data);
-        } catch (err) {
-          console.error('n8n webhook error:', err);
-        }
-      });
-    });
+    widget.addEventListener('call-end', async () => {
+  try {
+    const res  = await fetch('https://YOUR-NGROK-URL/webhook/get-last-booking');
+    const data = await res.json();
+    // Postgres returns an array — grab first row
+    const row  = Array.isArray(data) ? data[0] : data;
+    if (row) showResult(row);
+  } catch (err) {
+    console.error('Error fetching booking:', err);
+  }
+});
 
     function showResult(data) {
       const d = data.data || data;
