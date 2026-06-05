@@ -383,18 +383,22 @@
   };
 
   async function fetchAndShow() {
-    try {
-      const res  = await fetch(N8N_FETCH);
-      const data = await res.json();
-      const row  = Array.isArray(data) ? data[0] : data;
-      if (row) {
-        document.getElementById('chat-window').classList.remove('show');
-        showResult(row);
+  try {
+    const res = await fetch(N8N_FETCH, {
+      headers: {
+        'ngrok-skip-browser-warning': 'true'  // ← add this
       }
-    } catch (err) {
-      console.error('Could not fetch booking:', err);
+    });
+    const data = await res.json();
+    const row  = Array.isArray(data) ? data[0] : data;
+    if (row) {
+      document.getElementById('chat-window').classList.remove('show');
+      showResult(row);
     }
+  } catch (err) {
+    console.error('Could not fetch booking:', err);
   }
+}
 
   function showResult(d) {
     const appt = d.appointment_time ? new Date(d.appointment_time) : null;
