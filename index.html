@@ -165,7 +165,7 @@
 
     widget.addEventListener('call-end', async () => {
   try {
-    const res  = await fetch('https://YOUR-NGROK-URL/webhook/get-last-booking');
+    const res  = await fetch('https://removed-humility-contusion.ngrok-free.devhttp:/webhook/latest-booking');
     const data = await res.json();
     // Postgres returns an array — grab first row
     const row  = Array.isArray(data) ? data[0] : data;
