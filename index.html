@@ -318,9 +318,11 @@
 
   const AGENT_ID = 'agent_7001kt1j05xqehtryzh9msmw3sqc';
   let conv = null;
+  let bookingConfirmed = false;
 
   window.startCall = async () => {
     try {
+      bookingConfirmed = false;
       await navigator.mediaDevices.getUserMedia({ audio: true });
 
       // Show chat window, hide CTA
@@ -338,8 +340,19 @@
         },
 
         onMessage: ({ message, source }) => {
-          addMessage(source === 'user' ? 'user' : 'agent', message);
-        },
+  addMessage(source === 'user' ? 'user' : 'agent', message);
+  // Detect when agent confirms booking
+  if (source === 'ai') {
+    const lower = message.toLowerCase();
+    if (
+      lower.includes('booked') ||
+      lower.includes('confirmed') ||
+      lower.includes('appointment') && lower.includes('email')
+    ) {
+      bookingConfirmed = true;
+    }
+  }
+},
 
         onModeChange: ({ mode }) => {
           if (mode === 'speaking') {
@@ -353,11 +366,16 @@
         },
 
         onDisconnect: () => {
-          setStatus('Call ended', false);
-          setMic('idle', 'Call ended');
-          // Wait a moment then fetch booking from DB
-          setTimeout(fetchAndShow, 1000);
-        },
+  setStatus('Call ended', false);
+  setMic('idle', 'Call ended');
+  // Only fetch if a booking was confirmed during this call
+  if (bookingConfirmed) {
+    setTimeout(fetchAndShow, 1500);
+  } else {
+    // Just go back to start button
+    setTimeout(resetToStart, 1500);
+  }
+},
 
         onError: (err) => {
           console.error(err);
@@ -379,6 +397,7 @@
     document.getElementById('result').classList.remove('show');
     document.getElementById('result-rows').innerHTML = '';
     document.getElementById('chat-messages').innerHTML = '';
+    bookingConfirmed = false;
     resetToStart();
   };
 
