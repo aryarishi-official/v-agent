@@ -1,20 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Book an Appointment</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500&display=swap');
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Outfit:wght@300;400;500;600&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       background: #0d0f14;
@@ -29,11 +21,7 @@
       padding: 40px 20px;
     }
 
-    .wrap {
-      width: 100%;
-      max-width: 480px;
-      text-align: center;
-    }
+    .wrap { width: 100%; max-width: 480px; text-align: center; }
 
     .eyebrow {
       font-size: 11px;
@@ -51,11 +39,7 @@
       letter-spacing: -0.5px;
       margin-bottom: 12px;
     }
-
-    h1 em {
-      font-style: italic;
-      color: #a78bfa;
-    }
+    h1 em { font-style: italic; color: #a78bfa; }
 
     .desc {
       font-size: 14px;
@@ -64,140 +48,397 @@
       margin-bottom: 48px;
     }
 
-    .card {
+    /* ── CTA Button ── */
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #6ee7b7, #a78bfa);
+      color: #0d0f14;
+      border: none;
+      border-radius: 100px;
+      padding: 16px 36px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      transition: opacity .2s, transform .15s;
+      margin-bottom: 32px;
+    }
+    .cta-btn:hover { opacity: .88; transform: translateY(-2px); }
+    .cta-btn:active { transform: translateY(0); }
+
+    /* ── Chat window ── */
+    .chat-window {
+      display: none;
       background: #161820;
       border: 1px solid #2a2d3e;
       border-radius: 20px;
-      padding: 40px 32px;
+      overflow: hidden;
       margin-bottom: 16px;
+      animation: fadeUp .3s ease;
+    }
+    .chat-window.show { display: block; }
+
+    .chat-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid #2a2d3e;
+    }
+    .chat-header-left { display: flex; align-items: center; gap: 10px; }
+    .agent-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6ee7b7, #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .agent-info .agent-name { font-size: 14px; font-weight: 500; }
+    .agent-info .agent-status {
+      font-size: 11px;
+      color: #6ee7b7;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #6ee7b7;
+    }
+    .status-dot.pulse { animation: dotPulse 1.2s ease-in-out infinite; }
+    @keyframes dotPulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .4; transform: scale(.7); }
     }
 
-    .result {
+    .end-call-btn {
+      background: rgba(248,113,113,.12);
+      border: 1px solid #f87171;
+      color: #f87171;
+      border-radius: 100px;
+      padding: 7px 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .end-call-btn:hover { background: rgba(248,113,113,.22); }
+
+    /* transcript */
+    .chat-messages {
+      height: 220px;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 3px; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #2a2d3e; border-radius: 4px; }
+
+    .msg { max-width: 80%; animation: fadeUp .2s ease; }
+    .msg.agent { align-self: flex-start; }
+    .msg.user  { align-self: flex-end; }
+
+    .msg-bubble {
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .msg.agent .msg-bubble {
+      background: #1e2130;
+      border: 1px solid #2a2d3e;
+      color: #e8eaf0;
+      border-bottom-left-radius: 4px;
+    }
+    .msg.user .msg-bubble {
+      background: #a78bfa;
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    /* mic indicator */
+    .mic-bar {
+      padding: 12px 20px;
+      border-top: 1px solid #2a2d3e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: #7c8099;
+    }
+    .mic-bar .mic-icon { font-size: 16px; }
+    .wave {
+      display: flex;
+      gap: 2px;
+      align-items: center;
+      height: 16px;
+    }
+    .wave span {
+      width: 3px;
+      background: #6ee7b7;
+      border-radius: 2px;
+      animation: wave 1s ease-in-out infinite;
+    }
+    .wave span:nth-child(1) { height: 6px;  animation-delay: 0s; }
+    .wave span:nth-child(2) { height: 12px; animation-delay: .15s; }
+    .wave span:nth-child(3) { height: 8px;  animation-delay: .3s; }
+    .wave span:nth-child(4) { height: 14px; animation-delay: .1s; }
+    .wave span:nth-child(5) { height: 5px;  animation-delay: .25s; }
+    @keyframes wave {
+      0%,100% { transform: scaleY(1); }
+      50%      { transform: scaleY(.4); }
+    }
+    .wave.idle span { animation: none; height: 4px; background: #3a3d52; }
+
+    /* ── Result card ── */
+    .result { display: none; }
+    .result.show {
+      display: block;
       background: #161820;
       border: 1px solid #6ee7b7;
       border-radius: 16px;
       padding: 24px;
-      display: none;
       text-align: left;
-      animation: fadeUp .3s ease;
+      margin-bottom: 16px;
+      animation: fadeUp .35s ease;
     }
-
-    .result.show {
-      display: block;
-    }
-
     @keyframes fadeUp {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-
-      to {
-        opacity: 1;
-      }
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
     }
-
     .result-title {
-      font-size: 12px;
+      font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: #6ee7b7;
       font-weight: 500;
       margin-bottom: 16px;
     }
-
     .result-row {
       display: flex;
       justify-content: space-between;
-      padding: 8px 0;
+      padding: 9px 0;
       border-bottom: 1px solid #2a2d3e;
       font-size: 14px;
     }
+    .result-row:last-child { border: none; }
+    .result-key { color: #7c8099; }
+    .result-val { font-weight: 500; }
+    .result-id  { color: #6ee7b7; font-weight: 600; }
 
-    .result-row:last-child {
-      border: none;
-    }
-
-    .result-key {
+    .book-again {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #2a2d3e;
       color: #7c8099;
+      border-radius: 10px;
+      padding: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      margin-top: 16px;
+      transition: border-color .2s, color .2s;
     }
+    .book-again:hover { border-color: #a78bfa; color: #e8eaf0; }
 
-    .result-val {
-      font-weight: 500;
-    }
-
-    .result-id {
-      color: #6ee7b7;
-    }
-
-    .footer {
-      font-size: 11px;
-      color: #3a3d52;
-      margin-top: 24px;
-    }
+    .footer { font-size: 11px; color: #3a3d52; margin-top: 24px; }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
+<div class="wrap">
 
-    <div class="eyebrow">AI Voice Assistant</div>
-    <h1>Book your<br /><em>appointment</em></h1>
-    <p class="desc">Speak to the agent — give your name, preferred date, time and phone number.</p>
+  <div class="eyebrow">AI Voice Assistant</div>
+  <h1>Book your<br/><em>appointment</em></h1>
+  <p class="desc">Speak to the agent — give your name, preferred date, time and phone number.</p>
 
-    <div class="">
-      <elevenlabs-convai agent-id="agent_7001kt1j05xqehtryzh9msmw3sqc"></elevenlabs-convai>
-      <script src="https://unpkg.com/@elevenlabs/convai-widget-embed" async type="text/javascript"></script>
+  <!-- CTA button — shown before call starts -->
+  <button class="cta-btn" id="start-btn" onclick="startCall()">
+    🎙️ &nbsp;Talk to Book Appointment
+  </button>
+
+  <!-- Chat window — shown during call -->
+  <div class="chat-window" id="chat-window">
+
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="agent-avatar">🤖</div>
+        <div class="agent-info">
+          <div class="agent-name">Booking Agent</div>
+          <div class="agent-status">
+            <div class="status-dot pulse" id="status-dot"></div>
+            <span id="status-label">Connecting…</span>
+          </div>
+        </div>
+      </div>
+      <button class="end-call-btn" onclick="endCall()">✕ End Call</button>
     </div>
 
-    <div class="result" id="result">
-      <div class="result-title">✓ Appointment confirmed</div>
-      <div id="result-rows"></div>
+    <div class="chat-messages" id="chat-messages">
+      <!-- messages appear here -->
     </div>
 
-    <div class="footer">Powered by ElevenLabs · Workflow by n8n</div>
+    <div class="mic-bar">
+      <span class="mic-icon">🎙️</span>
+      <div class="wave idle" id="wave">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <span id="mic-label">Waiting…</span>
+    </div>
+
   </div>
 
-  
-  <script>
-    // ── paste your n8n production webhook URL here ──
-    const N8N_WEBHOOK = 'https://removed-humility-contusion.ngrok-free.devhttp:/webhook/latest-booking';
+  <!-- Result card — shown after call ends -->
+  <div class="result" id="result">
+    <div class="result-title">✓ Appointment confirmed</div>
+    <div id="result-rows"></div>
+    <button class="book-again" onclick="resetPage()">← Book another appointment</button>
+  </div>
 
-    widget.addEventListener('call-end', async () => {
-  try {
-    const res  = await fetch('https://removed-humility-contusion.ngrok-free.devhttp:/webhook/latest-booking');
-    const data = await res.json();
-    // Postgres returns an array — grab first row
-    const row  = Array.isArray(data) ? data[0] : data;
-    if (row) showResult(row);
-  } catch (err) {
-    console.error('Error fetching booking:', err);
+  <div class="footer">Powered by ElevenLabs · Workflow by n8n</div>
+</div>
+
+<script type="module">
+  import { Conversation } from 'https://cdn.jsdelivr.net/npm/@11labs/client@latest/+esm';
+
+  // ── ONLY CHANGE THIS LINE — paste your ngrok URL ──────────────────────────
+  const N8N_FETCH = 'https://YOUR-NGROK-URL.ngrok-free.app/webhook/get-last-booking';
+  // ─────────────────────────────────────────────────────────────────────────
+
+  const AGENT_ID = 'agent_7001kt1j05xqehtryzh9msmw3sqc';
+  let conv = null;
+
+  window.startCall = async () => {
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Show chat window, hide CTA
+      document.getElementById('start-btn').style.display = 'none';
+      document.getElementById('chat-window').classList.add('show');
+      setStatus('Connecting…', true);
+      setMic('idle', 'Connecting…');
+
+      conv = await Conversation.startSession({
+        agentId: AGENT_ID,
+
+        onConnect: () => {
+          setStatus('Live', true);
+          setMic('idle', 'Agent is ready — speak now');
+        },
+
+        onMessage: ({ message, source }) => {
+          addMessage(source === 'user' ? 'user' : 'agent', message);
+        },
+
+        onModeChange: ({ mode }) => {
+          if (mode === 'speaking') {
+            setStatus('Agent speaking…', true);
+            setMic('idle', 'Agent speaking…');
+          }
+          if (mode === 'listening') {
+            setStatus('Listening…', true);
+            setMic('active', 'Listening to you…');
+          }
+        },
+
+        onDisconnect: () => {
+          setStatus('Call ended', false);
+          setMic('idle', 'Call ended');
+          // Wait a moment then fetch booking from DB
+          setTimeout(fetchAndShow, 1000);
+        },
+
+        onError: (err) => {
+          console.error(err);
+          setStatus('Error', false);
+        }
+      });
+
+    } catch (err) {
+      alert('Microphone access needed. Please allow and try again.');
+      resetToStart();
+    }
+  };
+
+  window.endCall = async () => {
+    if (conv) { await conv.endSession(); conv = null; }
+  };
+
+  window.resetPage = () => {
+    document.getElementById('result').classList.remove('show');
+    document.getElementById('result-rows').innerHTML = '';
+    document.getElementById('chat-messages').innerHTML = '';
+    resetToStart();
+  };
+
+  async function fetchAndShow() {
+    try {
+      const res  = await fetch(N8N_FETCH);
+      const data = await res.json();
+      const row  = Array.isArray(data) ? data[0] : data;
+      if (row) {
+        document.getElementById('chat-window').classList.remove('show');
+        showResult(row);
+      }
+    } catch (err) {
+      console.error('Could not fetch booking:', err);
+    }
   }
-});
 
-    function showResult(data) {
-      const d = data.data || data;
-      const appt = d.appointment_time ? new Date(d.appointment_time) : null;
+  function showResult(d) {
+    const appt = d.appointment_time ? new Date(d.appointment_time) : null;
+    const rows = [
+      ['Booking ID', d.id],
+      ['Email',      d.customer_email],
+      ['Date',       appt ? appt.toLocaleDateString('en-IN', { dateStyle: 'long'  }) : null],
+      ['Time',       appt ? appt.toLocaleTimeString('en-IN', { timeStyle: 'short' }) : null],
+      ['Status',     d.status],
+    ].filter(([, v]) => v);
 
-      const rows = [
-        ['Booking ID', d.booking_id || d.id],
-        ['Email', d.customer_email],
-        ['Date', appt ? appt.toLocaleDateString('en-IN', { dateStyle: 'long' }) : null],
-        ['Time', appt ? appt.toLocaleTimeString('en-IN', { timeStyle: 'short' }) : null],
-        ['Status', d.status],
-      ].filter(([, v]) => v);
-
-      document.getElementById('result-rows').innerHTML = rows
-        .map(([k, v]) => `
+    document.getElementById('result-rows').innerHTML = rows
+      .map(([k, v]) => `
         <div class="result-row">
           <span class="result-key">${k}</span>
           <span class="result-val ${k === 'Booking ID' ? 'result-id' : ''}">${v}</span>
-        </div>`
-        ).join('');
+        </div>`).join('');
 
-      document.getElementById('result').classList.add('show');
-    }
-  </script>
+    document.getElementById('result').classList.add('show');
+  }
+
+  function addMessage(role, text) {
+    const box = document.getElementById('chat-messages');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    div.innerHTML = `<div class="msg-bubble">${text}</div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function setStatus(label, pulse) {
+    document.getElementById('status-label').textContent = label;
+    document.getElementById('status-dot').className = `status-dot${pulse ? ' pulse' : ''}`;
+  }
+
+  function setMic(state, label) {
+    document.getElementById('wave').className = `wave${state === 'active' ? '' : ' idle'}`;
+    document.getElementById('mic-label').textContent = label;
+  }
+
+  function resetToStart() {
+    document.getElementById('start-btn').style.display = 'inline-flex';
+    document.getElementById('chat-window').classList.remove('show');
+  }
+</script>
 </body>
-
 </html>
